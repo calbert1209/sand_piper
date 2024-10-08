@@ -10,5 +10,4 @@ while True:
 
     while len(eventBus.events) > 0:
         event = eventBus.events.pop(0)
-        status = eventBus.toString(event)
-        print(status)
+        print(event.toStr())
