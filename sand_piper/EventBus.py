@@ -7,6 +7,7 @@ class EventBus:
         self.macroPad = macroPad
         self.events = []
         self.lastEncoderSwitch = False
+        self.lastEncoder = 0
 
     def _getKeyEvents(self):
         k_event = self.macroPad.keys.events.get()
@@ -30,9 +31,24 @@ class EventBus:
             })
             self.lastEncoderSwitch = enc_switch
 
+    def _getEncoderEvent(self):
+        encoder = self.macroPad.encoder
+        if encoder != self.lastEncoder:
+            self.events.append({
+                "type": "enc",
+                "payload": {
+                    "timestamp": ticks_ms(),
+                    "previous": self.lastEncoder,
+                    "current": encoder,
+                    "delta": encoder - self.lastEncoder
+                }
+            })
+            self.lastEncoder = encoder
+
     def update(self):
         self._getKeyEvents()
         self._getEncoderSwitchEvent()
+        self._getEncoderEvent()
 
     def toString(self, event):
         type = event["type"]
@@ -42,3 +58,5 @@ class EventBus:
                 payload.timestamp, type, payload.key_number, payload.pressed)
         if type == "enc_sw":
             return "{} {} {}".format(payload["timestamp"], type, payload["pressed"])
+        if type == "enc":
+            return "{} {} {}".format(payload["timestamp"], type, payload["delta"],)
