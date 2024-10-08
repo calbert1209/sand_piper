@@ -50,7 +50,7 @@ class EventBus:
         self.events: list[HidEvent] = []
         self.lastEncoderSwitch = False
         self.lastEncoder = 0
-        self.listeners: list[(str, callable[[HidEvent], None])] = []
+        self.listeners = []
 
     def _getKeyEvents(self):
         k_event = self.macroPad.keys.events.get()
