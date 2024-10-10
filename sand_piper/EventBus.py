@@ -20,7 +20,7 @@ class KeyEvent(HidEvent):
         self.key_number = event.key_number
 
     def toStr(self):
-        return "{} {}".format(super().toStr(), self.key_number, self.pressed)
+        return "{} {} {}".format(super().toStr(), self.key_number, self.pressed)
 
 
 class EncoderEvent(HidEvent):
@@ -45,12 +45,17 @@ class EncoderSwitchEvent(HidEvent):
 
 
 class EventBus:
-    def __init__(self, macroPad: MacroPad):
+    def __init__(self, macroPad: MacroPad, onKeyDown=None, onKeyUp=None, onEncSwitchDown=None, onEncSwitchUp=None, onEncChange=None):
         self.macroPad = macroPad
         self.events: list[HidEvent] = []
         self.lastEncoderSwitch = False
         self.lastEncoder = 0
         self.listeners = []
+        self.onKeyDown = onKeyDown
+        self.onKeyUp = onKeyUp
+        self.onEncSwitchDown = onEncSwitchDown
+        self.onEncSwitchUp = onEncSwitchUp
+        self.onEncChange = onEncChange
 
     def _getKeyEvents(self):
         k_event = self.macroPad.keys.events.get()
@@ -74,3 +79,17 @@ class EventBus:
         self._getKeyEvents()
         self._getEncoderSwitchEvent()
         self._getEncoderEvent()
+        for event in self.events:
+            if event.type == "key":
+                if event.pressed and callable(self.onKeyDown):
+                    self.onKeyDown(event)
+                if event.released and callable(self.onKeyUp):
+                    self.onKeyUp(event)
+            elif event.type == "enc_sw":
+                if event.pressed and callable(self.onEncSwitchDown):
+                    self.onEncSwitchDown(event)
+                if event.released and callable(self.onEncSwitchUp):
+                    self.onEncSwitchUp(event)
+            elif event.type == "enc" and callable(self.onEncChange):
+                self.onEncChange(event)
+        self.events = []
