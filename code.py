@@ -8,12 +8,11 @@ def reportHidEvent(event: HidEvent):
     print(event.toStr())
 
 
-eventBus = EventBus(macroPad,
-                    onKeyDown=reportHidEvent,
-                    onKeyUp=reportHidEvent,
-                    onEncSwitchDown=reportHidEvent,
-                    onEncSwitchUp=reportHidEvent,
-                    onEncChange=reportHidEvent)
+eventBus = EventBus(macroPad)
+
+for type in ["key_down", "key_up", "enc_down", "enc_up", "enc_change"]:
+    eventBus.addEventListener(type, reportHidEvent)
+
 
 while True:
     eventBus.update()

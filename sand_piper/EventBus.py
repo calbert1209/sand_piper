@@ -45,17 +45,16 @@ class EncoderSwitchEvent(HidEvent):
 
 
 class EventBus:
-    def __init__(self, macroPad: MacroPad, onKeyDown=None, onKeyUp=None, onEncSwitchDown=None, onEncSwitchUp=None, onEncChange=None):
+    def __init__(self, macroPad: MacroPad):
         self.macroPad = macroPad
         self.events: list[HidEvent] = []
         self.lastEncoderSwitch = False
         self.lastEncoder = 0
-        self.listeners = []
-        self.onKeyDown = onKeyDown
-        self.onKeyUp = onKeyUp
-        self.onEncSwitchDown = onEncSwitchDown
-        self.onEncSwitchUp = onEncSwitchUp
-        self.onEncChange = onEncChange
+        self._keyDownHandlers = []
+        self._keyUpHandlers = []
+        self._encSwitchDownHandlers = []
+        self._encSwitchUpHandlers = []
+        self._encChangeHandlers = []
 
     def _getKeyEvents(self):
         k_event = self.macroPad.keys.events.get()
@@ -75,21 +74,48 @@ class EventBus:
             self.events.append(EncoderEvent(self.lastEncoder, encoder))
             self.lastEncoder = encoder
 
+    def _callHandlers(self, event, handlers):
+        for handler in handlers:
+            if callable(handler):
+                handler(event)
+
+    def _appendHandler(self, list, handler):
+        list.append(handler)
+        index = len(list) - 1
+
+        def removeHandler():
+            list[index] = None
+            return None
+
+        return removeHandler
+
+    def addEventListener(self, type, handler):
+        if type == "key_down":
+            return self._appendHandler(self._keyDownHandlers, handler)
+        elif type == "key_up":
+            return self._appendHandler(self._keyUpHandlers, handler)
+        elif type == "enc_down":
+            return self._appendHandler(self._encSwitchDownHandlers, handler)
+        elif type == "enc_up":
+            return self._appendHandler(self._encSwitchUpHandlers, handler)
+        elif type == "enc_change":
+            return self._appendHandler(self._encChangeHandlers, handler)
+
     def update(self):
         self._getKeyEvents()
         self._getEncoderSwitchEvent()
         self._getEncoderEvent()
         for event in self.events:
             if event.type == "key":
-                if event.pressed and callable(self.onKeyDown):
-                    self.onKeyDown(event)
-                if event.released and callable(self.onKeyUp):
-                    self.onKeyUp(event)
+                if event.pressed:
+                    self._callHandlers(event, self._keyDownHandlers)
+                else:
+                    self._callHandlers(event, self._keyUpHandlers)
             elif event.type == "enc_sw":
-                if event.pressed and callable(self.onEncSwitchDown):
-                    self.onEncSwitchDown(event)
-                if event.released and callable(self.onEncSwitchUp):
-                    self.onEncSwitchUp(event)
-            elif event.type == "enc" and callable(self.onEncChange):
-                self.onEncChange(event)
+                if event.pressed:
+                    self._callHandlers(event, self._encSwitchDownHandlers)
+                else:
+                    self._callHandlers(event, self._encSwitchUpHandlers)
+            elif event.type == "enc":
+                self._callHandlers(event, self._encChangeHandlers)
         self.events = []
