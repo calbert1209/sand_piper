@@ -21,15 +21,27 @@ class PageListEventModel:
             ])
         ]
         self._pageIndex = 0
+        self._keyIndex = 0
         self._edit = False
 
     def _onKeyDown(self, event: KeyEvent):
         print(event.toStr())
 
-    def _onEncChange(self, event: EncoderEvent):
-        nextIndex = (self._pageIndex + event.delta) % len(self._pages)
+    def _changePage(self, delta: int):
+        nextIndex = (self._pageIndex + delta) % len(self._pages)
         self._pageIndex = nextIndex
-        print(self.currentPage.name)
+        self._keyIndex = 0
+
+    def _changeKey(self, delta: int):
+        page = self.currentPage
+        nextIndex = (self._keyIndex + delta) % len(page.keys)
+        self._keyIndex = nextIndex
+
+    def _onEncChange(self, event: EncoderEvent):
+        if self._edit:
+            self._changeKey(event.delta)
+        else:
+            self._changePage(event.delta)
 
     def _onEncSwitchDown(self, event: EncoderSwitchEvent):
         nextEdit = not self._edit

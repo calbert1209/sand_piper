@@ -15,7 +15,10 @@ display = Display(macroPad)
 def updateView(vm: PageListEventModel, v: Display):
     for i in range(len(vm.currentPage.keys)):
         keyControl = vm.currentPage.keys[i]
-        v.setText(i, keyControl.label)
+        label = keyControl.label
+        if vm._edit and vm._keyIndex == i:
+            label = "|{}|".format(label)
+        v.setText(i, label)
 
     pageTitle = vm.currentPage.name
     if vm._edit:
