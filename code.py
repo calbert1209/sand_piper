@@ -1,52 +1,30 @@
 from adafruit_macropad import MacroPad
-from sand_piper.EventBus import EventBus, HidEvent, KeyEvent, EncoderEvent
+from sand_piper.EventBus import EventBus
+from sand_piper.Display import Display
+from sand_piper.PageListViewModel import PageListEventModel
+
 
 macroPad = MacroPad()
-
-
-def reportHidEvent(event: HidEvent):
-    print(event.toStr())
-
-
-class KeyCommand:
-    def __init__(self, label: str) -> None:
-        self.label = label
-
-
-class ControlPage:
-    def __init__(self, name: str) -> None:
-        self.name = name
-        self.keys = [
-            KeyCommand("VOL+"),
-            KeyCommand("VOL-"),
-            KeyCommand("MUTE")
-        ]
-
-
-class ViewModel:
-    def __init__(self, eventBus: EventBus) -> None:
-        eventBus.addEventListener('key_down', self._onKeyDown)
-        eventBus.addEventListener('enc_change', self._onEncChange)
-        self._eventBus = eventBus
-        self._pages = [ControlPage("Foo"), ControlPage("Bar")]
-        self._pageIndex = 0
-
-    def _onKeyDown(self, event: KeyEvent):
-        print(event.toStr())
-
-    def _onEncChange(self, event: EncoderEvent):
-        nextIndex = (self._pageIndex + event.delta) % len(self._pages)
-        self._pageIndex = nextIndex
-        print(self.currentPage.name)
-
-    @property
-    def currentPage(self):
-        return self._pages[self._pageIndex]
-
-
+macroPad.display.auto_refresh = False
+macroPad.pixels.auto_write = False
 eventBus = EventBus(macroPad)
-viewModel = ViewModel(eventBus)
+viewModel = PageListEventModel(eventBus)
+display = Display(macroPad)
+
+
+def updateView(vm: PageListEventModel, v: Display):
+    for i in range(len(vm.currentPage.keys)):
+        keyControl = vm.currentPage.keys[i]
+        v.setText(i, keyControl.label)
+
+    pageTitle = vm.currentPage.name
+    if vm._edit:
+        pageTitle = "[{}]".format(vm.currentPage.name)
+
+    v.setText(13, pageTitle)
+    v.show()
 
 
 while True:
     eventBus.update()
+    updateView(vm=viewModel, v=display)
