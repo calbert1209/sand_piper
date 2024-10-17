@@ -10,6 +10,8 @@ macroPad.pixels.auto_write = False
 eventBus = EventBus(macroPad)
 viewModel = PageListEventModel(eventBus)
 display = Display(macroPad)
+# bind display group to macroPad group
+macroPad.display.root_group = display.group
 
 
 def updateView(vm: PageListEventModel, v: Display):
