@@ -10,9 +10,19 @@ class PageListEventModel:
         self._eventBus = eventBus
         self._pages = [
             ControlPage("Foo", [
-                KeyCommand("VOL+"),
-                KeyCommand("VOL-"),
-                KeyCommand("MUTE")
+                KeyCommand("ONE"),
+                KeyCommand("TWO"),
+                KeyCommand("TRES"),
+                KeyCommand("FOUR"),
+                KeyCommand("FIVE"),
+                KeyCommand("SIX"),
+                KeyCommand("SVN"),
+                KeyCommand("EIT"),
+                KeyCommand("NINE"),
+                KeyCommand("BACK"),
+                KeyCommand("DEL"),
+                KeyCommand("OK"),
+
             ]),
             ControlPage("Bar", [
                 KeyCommand("PREV"),
