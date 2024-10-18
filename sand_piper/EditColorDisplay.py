@@ -21,8 +21,6 @@ class Display:
 
     def __createOptions(self, group):
         for i in range(3):
-            x = i % 3
-            y = i // 3
             keyX = 0
             keyY = keyYMap[i]
             anchorPoint = (0.0, 1.0)
@@ -41,27 +39,27 @@ class Display:
             back = Rect(x * backWidth, keyY-BANNER_HEIGHT,
                         BANNER_WIDTH, BANNER_HEIGHT, fill=self._white)
             anchorPoint = (x / 2, 1.0)
-            # 2,4,6
+            # 3, 5, 7
             group.append(back)
             keyLabel = Label(self._font,
                              text=defaultMenuLabels[x],
                              color=self._black,
                              anchored_position=(keyX, keyY),
                              anchor_point=anchorPoint)
-            # 3, 5, 7
+            # 4, 5, 8
             group.append(keyLabel)
 
     def __createHeader(self, group):
         width = self.macroPad.display.width
         titleBack = Rect(0, 0, width, BANNER_HEIGHT, fill=self._white)
-        # group[8]
+        # group[9]
         group.append(titleBack)
         titleText = Label(self._font,
                           text='0:0',
                           color=self._black,
                           anchored_position=(width//2, -2),
                           anchor_point=(0.5, 0.0))
-        # group[9]
+        # group[10]
         group.append(titleText)
 
     def __createGroup(self):

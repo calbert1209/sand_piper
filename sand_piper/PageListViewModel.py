@@ -4,9 +4,9 @@ from sand_piper.Model import ControlPage, KeyCommand
 
 class PageListEventModel:
     def __init__(self, eventBus: EventBus) -> None:
-        eventBus.addEventListener('key_down', self._onKeyDown)
-        eventBus.addEventListener('enc_change', self._onEncChange)
-        eventBus.addEventListener('enc_down', self._onEncSwitchDown)
+        eventBus.addEventListener('key_down', self.__onKeyDown)
+        eventBus.addEventListener('enc_change', self.__onEncChange)
+        eventBus.addEventListener('enc_down', self.__onEncSwitchDown)
         self._eventBus = eventBus
         self._pages = [
             ControlPage("Foo", [
@@ -34,26 +34,26 @@ class PageListEventModel:
         self._keyIndex = 0
         self._edit = False
 
-    def _onKeyDown(self, event: KeyEvent):
+    def __onKeyDown(self, event: KeyEvent):
         print(event.toStr())
 
-    def _changePage(self, delta: int):
+    def __changePage(self, delta: int):
         nextIndex = (self._pageIndex + delta) % len(self._pages)
         self._pageIndex = nextIndex
         self._keyIndex = 0
 
-    def _changeKey(self, delta: int):
+    def __changeKey(self, delta: int):
         page = self.currentPage
         nextIndex = (self._keyIndex + delta) % len(page.keys)
         self._keyIndex = nextIndex
 
-    def _onEncChange(self, event: EncoderEvent):
+    def __onEncChange(self, event: EncoderEvent):
         if self._edit:
-            self._changeKey(event.delta)
+            self.__changeKey(event.delta)
         else:
-            self._changePage(event.delta)
+            self.__changePage(event.delta)
 
-    def _onEncSwitchDown(self, event: EncoderSwitchEvent):
+    def __onEncSwitchDown(self, event: EncoderSwitchEvent):
         nextEdit = not self._edit
         self._edit = nextEdit
 
