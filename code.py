@@ -1,6 +1,6 @@
 from adafruit_macropad import MacroPad
 from sand_piper.EventBus import EventBus
-from sand_piper.EditGridDisplay import Display
+from sand_piper.EditColorDisplay import Display
 from sand_piper.PageListViewModel import PageListEventModel
 
 
@@ -15,7 +15,7 @@ macroPad.display.root_group = display.group
 
 
 def updateView(vm: PageListEventModel, v: Display):
-    for i in range(len(vm.currentPage.keys) - 3):
+    for i in range(len(vm.currentPage.keys) - 9):
         keyControl = vm.currentPage.keys[i]
         label = keyControl.label
         if vm._edit and vm._keyIndex == i:
@@ -29,7 +29,7 @@ def updateView(vm: PageListEventModel, v: Display):
     v.setTitle(pageTitle)
     v.setPrimaryLabel(f"{vm.currentPage.name}")
     v.setSecondaryLabel("no")
-    v.setTertiaryLabel("WTF?")
+    v.setTertiaryLabel("DEL")
     v.show()
 
 
