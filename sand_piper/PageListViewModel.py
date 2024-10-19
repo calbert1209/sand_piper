@@ -1,5 +1,5 @@
 from sand_piper.EventBus import EventBus, KeyEvent, EncoderEvent, EncoderSwitchEvent
-from sand_piper.Model import ControlPage, KeyCommand
+from sand_piper.Models.Model import ControlPage, KeyCommand
 
 
 class PageListEventModel:

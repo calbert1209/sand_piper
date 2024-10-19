@@ -1,4 +1,3 @@
-# cspell:ignore displayio, terminalio, adafruit
 from displayio import Group
 import terminalio
 from adafruit_display_shapes.rect import Rect
