@@ -25,7 +25,7 @@ class Display:
             x = i % 3
             y = i // 3
             keyX = (width - 1) * x / 2
-            keyY = keyYMap[y]
+            keyY = keyYMap[y+1]
             anchorPoint = (x / 2, 1.0)
             keyLabel = Label(self._font,
                              text='',
