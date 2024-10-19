@@ -54,19 +54,14 @@ class ColorEditViewModel:
         self._options = ["r", "g", "b"]
         self._optionIndex = 0
         (r, g, b) = initialRgb
-        self._initialValue = RGBValue(r, g, b)
         self._value = RGBValue(r, g, b)
 
     def __onKeyDown(self, event: KeyEvent):
 
-        if event.key_number == 0:
-            self._optionIndex = 0
-        if event.key_number == 3:
-            self._optionIndex = 1
-        if event.key_number == 6:
-            self._optionIndex = 2
+        if event.key_number < 3:
+            self._optionIndex = event.key_number
         if event.key_number == 9:
-            print(f"no change: {self._initialValue.hexaDecimalString}")
+            print("no change")
         if event.key_number == 11:
             print(f"next value: {self._value.hexaDecimalString}")
 
@@ -95,24 +90,33 @@ class ColorEditViewModel:
 
     @property
     def redValue(self):
-        prefix = PREFIX
-        if self._optionIndex == 0:
-            prefix = SELECTED
-        return f"{prefix}r: {self._value.r}"
+        return f"{self._value.r:03}"
 
     @property
     def greenValue(self):
-        prefix = PREFIX
-        if self._optionIndex == 1:
-            prefix = SELECTED
-        return f"{prefix}g: {self._value.g}"
+        return f"{self._value.g:03}"
 
     @property
     def blueValue(self):
-        prefix = PREFIX
+        return f"{self._value.b:03}"
+
+    @property
+    def rHeader(self):
+        if self._optionIndex == 0:
+            return "[R]"
+        return " R "
+
+    @property
+    def gHeader(self):
+        if self._optionIndex == 1:
+            return "[G]"
+        return " G "
+
+    @property
+    def bHeader(self):
         if self._optionIndex == 2:
-            prefix = SELECTED
-        return f"{prefix}b: {self._value.b}"
+            return "[B]"
+        return " B "
 
     def valueString(self):
         return self._value.hexaDecimalString

@@ -18,25 +18,34 @@ macroPad.pixels.brightness = 0.2
 def initView(vm: ColorEditViewModel, v: Display):
     v.setPrimaryLabel("OK")
     v.setSecondaryLabel("X")
+    v.setText(0, vm.rHeader)
+    v.setText(1, vm.gHeader)
+    v.setText(2, vm.bHeader)
+    v.setText(3, vm.redValue)
+    v.setText(4, vm.greenValue)
+    v.setText(5, vm.blueValue)
     v.show()
 
 
 def updateView(vm: ColorEditViewModel, v: Display):
-    v.setText(0, vm.redValue)
-    v.setText(1, vm.greenValue)
-    v.setText(2, vm.blueValue)
+    v.setText(0, vm.rHeader)
+    v.setText(1, vm.gHeader)
+    v.setText(2, vm.bHeader)
+    v.setText(3, vm.redValue)
+    v.setText(4, vm.greenValue)
+    v.setText(5, vm.blueValue)
     pageTitle = vm.valueString()
     v.setTitle(pageTitle)
     v.show()
 
 
 def updatePixels(vm: ColorEditViewModel):
-    for i in [1, 2, 4, 5, 7, 8]:
-        macroPad.pixels[i] = vm.hexValue
+    for i in range(6):
+        macroPad.pixels[i + 3] = vm.hexValue
 
     macroPad.pixels[0] = 0xff0000
-    macroPad.pixels[3] = 0x00ff00
-    macroPad.pixels[6] = 0x0000ff
+    macroPad.pixels[1] = 0x00ff00
+    macroPad.pixels[2] = 0x0000ff
     macroPad.pixels[9] = 0xff0000
     macroPad.pixels[11] = 0x00ff00
     macroPad.pixels.show()
