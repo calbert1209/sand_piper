@@ -1,16 +1,18 @@
 from adafruit_macropad import MacroPad
+from sand_piper.EditLabelViewModel import EditLabelViewModel
 from sand_piper.EventBus import EventBus
-from sand_piper.EditColorDisplay import EditColorDisplay
-from sand_piper.ColorEditViewModel import ColorEditViewModel
+from sand_piper.EditLabelDisplay import EditLabelDisplay
+
+
+def onComplete(result):
+    print(result)
 
 
 macroPad = MacroPad()
 eventBus = EventBus(macroPad)
-display = EditColorDisplay(macroPad)
-viewModel = ColorEditViewModel(
-    eventBus=eventBus, view=display, macroPad=macroPad, initialRgb=(255, 0, 0))
-
-viewModel.update()
+display = EditLabelDisplay(macroPad)
+viewModel = EditLabelViewModel(
+    eventBus=eventBus, view=display, macroPad=macroPad, initialValue="DUDE", onComplete=onComplete)
 
 while True:
     eventBus.update()
