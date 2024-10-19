@@ -12,9 +12,7 @@ BANNER_HEIGHT = 11
 BANNER_WIDTH = 42
 
 
-class Display:
-    """ Represents a 3 x 4 matrix of keys on screen """
-
+class EditColorDisplay:
     _black = 0x000000
     _white = 0xFFFFFF
     _font = terminalio.FONT

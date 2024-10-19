@@ -1,20 +1,22 @@
-from adafruit_macropad import _PixelMapLite as PixelMap
-from sand_piper.EditColorDisplay import Display
-from sand_piper.EventBus import EventBus, KeyEvent, EncoderEvent, EncoderSwitchEvent
+from adafruit_macropad import MacroPad
+from sand_piper.EditColorDisplay import EditColorDisplay
+from sand_piper.EventBus import EventBus, KeyEvent, EncoderEvent
 from sand_piper.RgbValue import RGBValue
 
 
 class ColorEditViewModel:
-    def __init__(self, eventBus: EventBus, view: Display, pixels: PixelMap, initialRgb: tuple[int, int, int]) -> None:
-        eventBus.addEventListener("key_down", self.__onKeyDown)
-        eventBus.addEventListener("enc_change", self.__onEncoderChange)
+    _options = ["r", "g", "b"]
+    _optionIndex = 0
+
+    def __init__(self, eventBus: EventBus, view: EditColorDisplay, macroPad: MacroPad, initialRgb: tuple[int, int, int]) -> None:
+        eventBus.setOnKeyDown(self.__onKeyDown)
+        eventBus.setOnEncChange(self.__onEncoderChange)
         self._eventBus = eventBus
+        macroPad.display.root_group = view.group
         self._view = view
-        self._pixels = pixels
-        self._pixels.auto_write = False
-        self._pixels.brightness = 0.2
-        self._options = ["r", "g", "b"]
-        self._optionIndex = 0
+        macroPad.pixels.auto_write = False
+        macroPad.pixels.brightness = 0.2
+        self._pixels = macroPad.pixels
         (r, g, b) = initialRgb
         self._value = RGBValue(r, g, b)
 
@@ -70,19 +72,19 @@ class ColorEditViewModel:
     def hexValue(self):
         return self._value.hexValue
 
-    def _updateView(self):
+    def __updateView(self):
         self._view.setPrimaryLabel("OK")
         self._view.setSecondaryLabel("X")
-        self._view.setText(3, self._rHeader)
-        self._view.setText(4, self._gHeader)
-        self._view.setText(5, self._bHeader)
         self._view.setText(0, self._asString(self._value.r))
         self._view.setText(1, self._asString(self._value.g))
         self._view.setText(2, self._asString(self._value.b))
+        self._view.setText(3, self._rHeader)
+        self._view.setText(4, self._gHeader)
+        self._view.setText(5, self._bHeader)
         self._view.setTitle(self._value.hexaDecimalString)
         self._view.show()
 
-    def _updatePixels(self):
+    def __updatePixels(self):
         for i in range(6):
             self._pixels[i] = self.hexValue
 
@@ -94,5 +96,5 @@ class ColorEditViewModel:
         self._pixels.show()
 
     def update(self):
-        self._updateView()
-        self._updatePixels()
+        self.__updateView()
+        self.__updatePixels()

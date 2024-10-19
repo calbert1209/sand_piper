@@ -55,6 +55,14 @@ class EventBus:
         self._encSwitchDownHandlers = []
         self._encSwitchUpHandlers = []
         self._encChangeHandlers = []
+        self._onKeyDown = self._noOp
+        self._onKeyUp = self._noOp
+        self._onEncSwitchDown = self._noOp
+        self._onEncSwitchUp = self._noOp
+        self._onEncChange = self._noOp
+
+    def _noOp(self, event: HidEvent):
+        pass
 
     def _getKeyEvents(self):
         k_event = self.macroPad.keys.events.get()
@@ -108,14 +116,34 @@ class EventBus:
         for event in self.events:
             if event.type == "key":
                 if event.pressed:
+                    self._onKeyDown(event)
                     self._callHandlers(event, self._keyDownHandlers)
                 else:
+                    self._onKeyUp(event)
                     self._callHandlers(event, self._keyUpHandlers)
             elif event.type == "enc_sw":
                 if event.pressed:
+                    self._onEncSwitchUp(event)
                     self._callHandlers(event, self._encSwitchDownHandlers)
                 else:
+                    self._onEncSwitchUp(event)
                     self._callHandlers(event, self._encSwitchUpHandlers)
             elif event.type == "enc":
+                self._onEncChange(event)
                 self._callHandlers(event, self._encChangeHandlers)
         self.events = []
+
+    def setOnKeyDown(self, cb: function[KeyEvent, None] | None):
+        if cb == None:
+            self._onKeyDown = self._noOp
+        self._onKeyDown = cb
+
+    def setOnEncChange(self, cb: function[EncoderEvent, None] | None):
+        if cb == None:
+            self._onEncChange = self._noOp
+        self._onEncChange = cb
+
+    def setOnEncSwitchDown(self, cb: function[EncoderSwitchEvent, None] | None):
+        if cb == None:
+            self._onEncSwitchDown = self._noOp
+        self._onEncSwitchDown = cb
