@@ -123,7 +123,7 @@ class EventBus:
                     self._callHandlers(event, self._keyUpHandlers)
             elif event.type == "enc_sw":
                 if event.pressed:
-                    self._onEncSwitchUp(event)
+                    self._onEncSwitchDown(event)
                     self._callHandlers(event, self._encSwitchDownHandlers)
                 else:
                     self._onEncSwitchUp(event)

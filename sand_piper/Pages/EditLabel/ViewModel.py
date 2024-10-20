@@ -1,14 +1,11 @@
 from adafruit_macropad import MacroPad
-from sand_piper.Models.Keycodes import KeyCodes
 from sand_piper.Pages.EditLabel.Display import EditLabelDisplay
 from sand_piper.EventBus import EventBus, KeyEvent, EncoderEvent
 from sand_piper.PaginationManager import PaginationManager
 
-# OPTIONS = ["A", "B", "C", "D", "E", "F", "G", "H", "I",
-#            "J", "K", "L", "M", "N", "O", "P", "Q", "R",
-#            "S", "T", "U", "V", "W", "X", "Y", "Z", "."]
-
-OPTIONS = KeyCodes.keys
+OPTIONS = ["A", "B", "C", "D", "E", "F", "G", "H", "I",
+           "J", "K", "L", "M", "N", "O", "P", "Q", "R",
+           "S", "T", "U", "V", "W", "X", "Y", "Z", "."]
 
 
 class EditLabelViewModel:

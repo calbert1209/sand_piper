@@ -6,7 +6,7 @@ from adafruit_hid.keycode import Keycode as AdaKeyCode
 class KeyCodes:
     keys = [
         "CTRL",
-        "SHIFT",
+        "SHFT",
         "ALT",
         "OPTION",
         "WIN",
@@ -309,6 +309,7 @@ class KeyCodes:
         "CTRL": AdaKeyCode.CONTROL,
         "LEFT_SHIFT": AdaKeyCode.LEFT_SHIFT,
         "SHIFT": AdaKeyCode.SHIFT,
+        "SHFT": AdaKeyCode.SHIFT,
         "LEFT_ALT": AdaKeyCode.LEFT_ALT,
         "ALT": AdaKeyCode.ALT,
         "OPTION": AdaKeyCode.OPTION,
