@@ -19,5 +19,6 @@
     "displayio",
     "macropad",
     "terminalio"
-  ]
+  ],
+  "makefile.configureOnOpen": false
 }

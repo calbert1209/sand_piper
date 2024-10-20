@@ -1,11 +1,14 @@
 
+import math
+
+
 class PaginationManager:
     _pageIndex = 0
 
     def __init__(self, items: list, pageSize: int, repeating=True):
         self._options = items
         self._pageSize = pageSize
-        self.pageCount = len(items) // pageSize
+        self.pageCount = math.ceil(len(items) / pageSize)
         self._repeating = repeating
 
     def __resolveNextIndex(self, times: int):

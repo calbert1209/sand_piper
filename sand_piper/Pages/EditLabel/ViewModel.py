@@ -1,11 +1,14 @@
 from adafruit_macropad import MacroPad
+from sand_piper.Models.Keycodes import KeyCodes
 from sand_piper.Pages.EditLabel.Display import EditLabelDisplay
 from sand_piper.EventBus import EventBus, KeyEvent, EncoderEvent
 from sand_piper.PaginationManager import PaginationManager
 
-OPTIONS = ["A", "B", "C", "D", "E", "F", "G", "H", "I",
-           "J", "K", "L", "M", "N", "O", "P", "Q", "R",
-           "S", "T", "U", "V", "W", "X", "Y", "Z", "."]
+# OPTIONS = ["A", "B", "C", "D", "E", "F", "G", "H", "I",
+#            "J", "K", "L", "M", "N", "O", "P", "Q", "R",
+#            "S", "T", "U", "V", "W", "X", "Y", "Z", "."]
+
+OPTIONS = KeyCodes.keys
 
 
 class EditLabelViewModel:
@@ -31,7 +34,9 @@ class EditLabelViewModel:
 
         if event.key_number < 9:
             options = self._options.currentPage
-            self._value.append(options[event.key_number])
+            # final page of options may have less than 9 options
+            if event.key_number < len(options):
+                self._value.append(options[event.key_number])
             return
 
         if event.key_number == 9:
@@ -51,7 +56,11 @@ class EditLabelViewModel:
         self._view.setTitle(self._valueString + "_")
         options = self._options.currentPage
         for i in range(9):
-            self._view.setText(i, options[i])
+            # final page of options may have less than 9 options
+            if i < len(options):
+                self._view.setText(i, options[i])
+            else:
+                self._view.setText(i, "")
 
     def __updatePixels(self):
         pass
