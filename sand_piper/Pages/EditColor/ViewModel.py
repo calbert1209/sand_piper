@@ -1,5 +1,6 @@
 from adafruit_macropad import MacroPad
-from sand_piper.Display import EditColorDisplay
+from sand_piper.Models import RgbValue
+from sand_piper.Pages.EditColor.Display import EditColorDisplay
 from sand_piper.EventBus import EventBus, KeyEvent, EncoderEvent
 from sand_piper.Models.RgbValue import RGBValue
 
@@ -8,17 +9,10 @@ class EditColorViewModel:
     _options = ["r", "g", "b"]
     _optionIndex = 0
 
-    def __init__(self, eventBus: EventBus, view: EditColorDisplay, macroPad: MacroPad, initialRgb: tuple[int, int, int]) -> None:
-        eventBus.setOnKeyDown(self.__onKeyDown)
-        eventBus.setOnEncChange(self.__onEncoderChange)
-        self._eventBus = eventBus
-        macroPad.display.root_group = view.group
+    def __init__(self, view: EditColorDisplay, initialRgb: RgbValue, onComplete) -> None:
         self._view = view
-        macroPad.pixels.auto_write = False
-        macroPad.pixels.brightness = 0.2
-        self._pixels = macroPad.pixels
-        (r, g, b) = initialRgb
-        self._value = RGBValue(r, g, b)
+        self._value = initialRgb
+        self.__onComplete = onComplete
 
     def __onKeyDown(self, event: KeyEvent):
 
@@ -29,9 +23,9 @@ class EditColorViewModel:
         if event.key_number == 8:
             self._optionIndex = 2
         if event.key_number == 9:
-            print("no change")
+            self.__onComplete(None)
         if event.key_number == 11:
-            print(f"next value: {self._value.hexaDecimalString}")
+            self.__onComplete(self._value.hexaDecimalString)
 
     def __onEncoderChange(self, event: EncoderEvent):
         delta = event.delta
@@ -98,3 +92,16 @@ class EditColorViewModel:
     def update(self):
         self.__updateView()
         self.__updatePixels()
+
+    def connect(self, eventBus: EventBus, macroPad: MacroPad):
+        self._pixels = macroPad.pixels
+        macroPad.pixels.auto_write = False
+        macroPad.pixels.brightness = 0.2
+        macroPad.display.root_group = self._view.group
+        eventBus.setOnKeyDown(self.__onKeyDown)
+        eventBus.setOnEncChange(self.__onEncoderChange)
+
+    def disconnect(self, eventBus: EventBus):
+        eventBus.setOnKeyDown(None)
+        eventBus.setOnEncChange(None)
+        self._pixels = None
