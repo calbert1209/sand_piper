@@ -11,10 +11,8 @@ OPTIONS = ["A", "B", "C", "D", "E", "F", "G", "H", "I",
 class EditLabelViewModel:
     _scrollIndex = 1
 
-    def __init__(self, macroPad: MacroPad, initialValue: str, onComplete):
-        self._view = EditLabelDisplay(macroPad)
-        self._macroPad = macroPad
-        self._pixels = macroPad.pixels
+    def __init__(self, view: EditLabelDisplay, initialValue: str, onComplete):
+        self._view = view
         self._value = list(initialValue)
         self._options = PaginationManager(
             items=OPTIONS, pageSize=9, repeating=True)
@@ -70,9 +68,11 @@ class EditLabelViewModel:
         macroPad.pixels.auto_write = False
         macroPad.pixels.brightness = 0.2
         macroPad.display.root_group = self._view.group
+        self._pixels = macroPad.pixels
         eventBus.setOnKeyDown(self.__onKeyDown)
         eventBus.setOnEncChange(self.__onEncChange)
 
     def disconnect(self, eventBus: EventBus):
         eventBus.setOnKeyDown(None)
         eventBus.setOnEncChange(None)
+        self._pixels = None
