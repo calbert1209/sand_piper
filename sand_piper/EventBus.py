@@ -138,6 +138,11 @@ class EventBus:
             self._onKeyDown = self._noOp
         self._onKeyDown = cb
 
+    def setOnKeyUp(self, cb: function[KeyEvent, None] | None):
+        if cb == None:
+            self._onKeyUp = self._noOp
+        self._onKeyUp = cb
+
     def setOnEncChange(self, cb: function[EncoderEvent, None] | None):
         if cb == None:
             self._onEncChange = self._noOp
