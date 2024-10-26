@@ -45,7 +45,7 @@ class EditSettingsViewModel:
         if event.key_number == 11:
             self._pixels[11] = self._activeGreen
             option = OPTIONS[self._optionIndex]
-            self._onComplete(self._value.getSettingString(option))
+            self._onComplete(option)
 
         self._pixels.show()
 

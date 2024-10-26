@@ -1,4 +1,5 @@
 
+from sand_piper.Models.KeyCodes import KeyCode
 from sand_piper.Models.RgbValue import RGBValue
 
 
@@ -14,7 +15,7 @@ class ControlPage:
 
 
 class KeySettings:
-    def __init__(self, label: str, color: RGBValue, keyCodes: list[str]) -> None:
+    def __init__(self, label: str, color: RGBValue, keyCodes: list[KeyCode]) -> None:
         self._label = label
         self._color = color
         self._codes = keyCodes
@@ -29,12 +30,12 @@ class KeySettings:
 
         raise Exception(f"Invalid key: `{key}`")
 
-    def getSettingString(self, key):
+    def getSettingString(self, key: str):
         if key == "label":
             return self._label
         if key == "color":
             return self._color.hexaDecimalString
         if key == "keyCodes" or key == "codes":
-            return "".join(self._codes)
+            return "".join([code.valueString for code in self._codes])
 
         raise Exception(f"Invalid key: `{key}`")
