@@ -5,15 +5,19 @@ from sand_piper.EventBus import EncoderSwitchEvent, EventBus, KeyEvent, EncoderE
 from sand_piper.PaginationManager import PaginationManager
 
 
+class KeyCodeChord:
+    def __init__(self) -> None:
+        pass
+
+
 class EditKeyCodesViewModel:
     _scrollIndex = 1
     _pressMode = True
 
-    def __init__(self, macroPad: MacroPad, initialValue: str, onComplete):
-        self._view = EditKeyCodesDisplay(macroPad)
-        self._macroPad = macroPad
-        self._pixels = macroPad.pixels
-        self._values = [{"sign": "+", "value": c} for c in list(initialValue)]
+    def __init__(self, view: EditKeyCodesDisplay, initialValues: list[str], onComplete):
+        self._view = view
+        self._values = [KeyCodes.factory(valueString)
+                        for valueString in initialValues]
         self._options = PaginationManager(
             items=KeyCodes.keys, pageSize=9, repeating=True)
         self._onComplete = onComplete
@@ -31,19 +35,15 @@ class EditKeyCodesViewModel:
             options = self._options.currentPage
             # final page of options may have less than 9 options
             if event.key_number < len(options):
-                self._values.append({
-                    "value": options[event.key_number],
-                    "sign": self._sign
-                })
+                valueString = f"{self._sign}{options[event.key_number]}"
+                self._values.append(KeyCodes.factory(valueString))
             return
 
         if event.key_number == 9:
             self._onComplete(None)
 
         if event.key_number == 11:
-            values = [f"{k["sign"]}{
-                KeyCodes.entries[k["value"]]}" for k in self._values]
-            # self._onComplete(self._valueString)
+            values = [k.valueString for k in self._values]
             self._onComplete(values)
 
     def __onEncChange(self, event: EncoderEvent):
@@ -69,7 +69,7 @@ class EditKeyCodesViewModel:
     def _valueString(self):
         output = ""
         for item in self._values:
-            output += f"{item["sign"]}{item["value"]}"
+            output += item.valueString
         return output
 
     def __updateView(self):
@@ -93,6 +93,7 @@ class EditKeyCodesViewModel:
         macroPad.pixels.auto_write = False
         macroPad.pixels.brightness = 0.2
         macroPad.display.root_group = self._view.group
+        self._pixels = macroPad.pixels
         eventBus.setOnKeyDown(self.__onKeyDown)
         eventBus.setOnEncChange(self.__onEncChange)
         eventBus.setOnEncSwitchDown(self.__onEncSwitchDown)
