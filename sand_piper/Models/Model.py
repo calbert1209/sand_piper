@@ -39,3 +39,9 @@ class KeySettings:
             return "".join([code.valueString for code in self._codes])
 
         raise Exception(f"Invalid key: `{key}`")
+
+    def clone(self, **kwargs):
+        label = kwargs.get('label', self._label)
+        color = kwargs.get('color', self._color)
+        codes = kwargs.get('keyCodes', self._codes)
+        return KeySettings(label=label, color=color, keyCodes=codes)

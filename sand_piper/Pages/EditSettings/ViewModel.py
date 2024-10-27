@@ -44,7 +44,8 @@ class EditSettingsViewModel:
 
         if event.key_number == 11:
             self._pixels[11] = self._activeGreen
-
+            option = OPTIONS[self._optionIndex]
+            self._onComplete(option)
         self._pixels.show()
 
     def __onKeyUp(self, event: KeyEvent):
@@ -58,8 +59,6 @@ class EditSettingsViewModel:
 
         if event.key_number == 11:
             self._pixels[11] = self._dimGreen
-            option = OPTIONS[self._optionIndex]
-            self._onComplete(option)
 
         self._pixels.show()
 
@@ -109,9 +108,6 @@ class EditSettingsViewModel:
         eventBus.setOnEncChange(self.__onEncChange)
 
     def disconnect(self, eventBus: EventBus):
-        # eventBus.setOnKeyDown(None)
-        # eventBus.setOnKeyUp(None)
-        # eventBus.setOnEncChange(None)
         self._pixels.fill(0x000000)
         self._pixels.show()
         self._pixels = None

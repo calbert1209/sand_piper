@@ -2,6 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
+# HINT
+# https://learn.adafruit.com/circuitpython-essentials/circuitpython-storage
+
 """CircuitPython Essentials Storage logging example"""
 import time
 import board

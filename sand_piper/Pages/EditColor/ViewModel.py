@@ -9,9 +9,9 @@ class EditColorViewModel:
     _options = ["r", "g", "b"]
     _optionIndex = 0
 
-    def __init__(self, view: EditColorDisplay, initialRgb: RgbValue, onComplete) -> None:
+    def __init__(self, view: EditColorDisplay, initialValue: RGBValue, onComplete) -> None:
         self._view = view
-        self._value = initialRgb
+        self._value = initialValue
         self.__onComplete = onComplete
 
     def __onKeyDown(self, event: KeyEvent):
@@ -25,7 +25,8 @@ class EditColorViewModel:
         if event.key_number == 9:
             self.__onComplete(None)
         if event.key_number == 11:
-            self.__onComplete(self._value.hexaDecimalString)
+            rgb = (self._value.r, self._value.g, self._value.b)
+            self.__onComplete(rgb)
 
     def __onEncoderChange(self, event: EncoderEvent):
         delta = event.delta
@@ -68,7 +69,6 @@ class EditColorViewModel:
 
     def __updateView(self):
         self._view.setPrimaryLabel("OK")
-        self._view.setSecondaryLabel("X")
         self._view.setText(0, self._asString(self._value.r))
         self._view.setText(1, self._asString(self._value.g))
         self._view.setText(2, self._asString(self._value.b))
@@ -102,6 +102,6 @@ class EditColorViewModel:
         eventBus.setOnEncChange(self.__onEncoderChange)
 
     def disconnect(self, eventBus: EventBus):
-        eventBus.setOnKeyDown(None)
-        eventBus.setOnEncChange(None)
+        self._pixels.fill(0x000000)
+        self._pixels.show()
         self._pixels = None

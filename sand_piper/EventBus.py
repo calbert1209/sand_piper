@@ -45,18 +45,11 @@ class EncoderSwitchEvent(HidEvent):
 
 
 class EventBus:
-    _resetRequested = False
-
     def __init__(self, macroPad: MacroPad):
         self.macroPad = macroPad
         self.events: list[HidEvent] = []
         self.lastEncoderSwitch = False
         self.lastEncoder = 0
-        self._keyDownHandlers = []
-        self._keyUpHandlers = []
-        self._encSwitchDownHandlers = []
-        self._encSwitchUpHandlers = []
-        self._encChangeHandlers = []
         self._onKeyDown = self._noOp
         self._onKeyUp = self._noOp
         self._onEncSwitchDown = self._noOp
@@ -84,33 +77,6 @@ class EventBus:
             self.events.append(EncoderEvent(self.lastEncoder, encoder))
             self.lastEncoder = encoder
 
-    def _callHandlers(self, event, handlers):
-        for handler in handlers:
-            if callable(handler):
-                handler(event)
-
-    def _appendHandler(self, list, handler):
-        list.append(handler)
-        index = len(list) - 1
-
-        def removeHandler():
-            list[index] = None
-            return None
-
-        return removeHandler
-
-    def addEventListener(self, type, handler):
-        if type == "key_down":
-            return self._appendHandler(self._keyDownHandlers, handler)
-        elif type == "key_up":
-            return self._appendHandler(self._keyUpHandlers, handler)
-        elif type == "enc_down":
-            return self._appendHandler(self._encSwitchDownHandlers, handler)
-        elif type == "enc_up":
-            return self._appendHandler(self._encSwitchUpHandlers, handler)
-        elif type == "enc_change":
-            return self._appendHandler(self._encChangeHandlers, handler)
-
     def update(self):
         self._getKeyEvents()
         self._getEncoderSwitchEvent()
@@ -119,29 +85,19 @@ class EventBus:
             if event.type == "key":
                 if event.pressed:
                     self._onKeyDown(event)
-                    # self._callHandlers(event, self._keyDownHandlers)
                 else:
-                    # print(event.toStr())
-                    # print(callable(self._onKeyUp))
                     self._onKeyUp(event)
-                    # self._callHandlers(event, self._keyUpHandlers)
             elif event.type == "enc_sw":
                 if event.pressed:
                     self._onEncSwitchDown(event)
-                    # self._callHandlers(event, self._encSwitchDownHandlers)
                 else:
                     self._onEncSwitchUp(event)
-                    # self._callHandlers(event, self._encSwitchUpHandlers)
             elif event.type == "enc":
                 self._onEncChange(event)
-                # self._callHandlers(event, self._encChangeHandlers)
 
         self.events = []
 
     def requestReset(self):
-        self._resetHandlers()
-
-    def _resetHandlers(self):
         self._onKeyDown = self._noOp
         self._onKeyUp = self._noOp
         self._onEncChange = self._noOp
