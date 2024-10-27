@@ -36,8 +36,9 @@ class EditSettingsDisplay:
         backWidth = BANNER_WIDTH + 1
         for x in range(3):
             keyX = row3KeyXMap[x]
+            fill = self._white if x % 2 == 0 else self._black
             back = Rect(x * backWidth, keyY-BANNER_HEIGHT,
-                        BANNER_WIDTH, BANNER_HEIGHT, fill=self._white)
+                        BANNER_WIDTH, BANNER_HEIGHT, fill=fill)
             anchorPoint = (x / 2, 1.0)
             group.append(back)
             keyLabel = Label(self._font,
