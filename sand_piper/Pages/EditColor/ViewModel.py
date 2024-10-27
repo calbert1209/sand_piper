@@ -101,7 +101,7 @@ class EditColorViewModel:
         eventBus.setOnKeyDown(self.__onKeyDown)
         eventBus.setOnEncChange(self.__onEncoderChange)
 
-    def disconnect(self, eventBus: EventBus):
+    def disconnect(self):
         self._pixels.fill(0x000000)
         self._pixels.show()
         self._pixels = None

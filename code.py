@@ -2,6 +2,8 @@ from adafruit_macropad import MacroPad
 from sand_piper.Models.KeyCodes import KeyCodes
 from sand_piper.Models.Model import KeySettings
 from sand_piper.Models.RgbValue import RGBValue
+from sand_piper.Pages.EditKeyCodes.Display import EditKeyCodesDisplay
+from sand_piper.Pages.EditKeyCodes.ViewModel import EditKeyCodesViewModel
 from sand_piper.Pages.EditSettings.ViewModel import EditSettingsViewModel
 from sand_piper.Pages.EditSettings.Display import EditSettingsDisplay
 from sand_piper.Pages.EditLabel.Display import EditLabelDisplay
@@ -37,7 +39,7 @@ def onCompleteSettingsMenu(key: str | None):
         routes.append("edit_color")
         return
     if key == "keyCodes":
-        print("would push EditKeyCodes page onto stack")
+        routes.append("edit_codes")
         return
 
     print("Something went wrong.")
@@ -62,6 +64,16 @@ def onCompleteEditColor(resp: tuple[int, int, int] | None):
         routes.pop()
 
 
+def onCompleteEditCodes(resp: list[str] | None):
+    if resp != None:
+        codes = [KeyCodes.factory(value) for value in resp]
+        global dummyValue
+        dummyValue = dummyValue.clone(keyCodes=codes)
+
+    if len(routes) > 1:
+        routes.pop()
+
+
 def getPagePerRoute(route: str):
     if route == "edit_settings":
         display = EditSettingsDisplay(macroPad=macroPad)
@@ -81,18 +93,21 @@ def getPagePerRoute(route: str):
             view=display,
             initialValue=dummyValue.getSetting("color"),
             onComplete=onCompleteEditColor)
+    if route == "edit_codes":
+        display = EditKeyCodesDisplay(macroPad=macroPad)
+        return EditKeyCodesViewModel(
+            view=display,
+            initialValues=[
+                k.valueString for k in dummyValue.getSetting("codes")],
+            onComplete=onCompleteEditCodes)
 
     return None
 
 
-def renderPage(routes: list[str]):
-    if routes[-1] != currentRoute:
-        currentRoute = routes[-1]
-        vm = getPagePerRoute(currentRoute)
-        vm.connect(macroPad=macroPad, eventBus=eventBus)
-        return vm
-
-    return None
+def navigate(route: str):
+    vm = getPagePerRoute(route)
+    vm.connect(macroPad=macroPad, eventBus=eventBus)
+    return vm
 
 
 viewModel = None
@@ -100,12 +115,10 @@ viewModel = None
 while True:
     if routes[-1] != currentRoute:
         if viewModel != None:
-            viewModel.disconnect(eventBus)
+            viewModel.disconnect()
             eventBus.requestReset()
         currentRoute = routes[-1]
-        vm = getPagePerRoute(currentRoute)
-        viewModel = vm
-        viewModel.connect(macroPad=macroPad, eventBus=eventBus)
+        viewModel = navigate(currentRoute)
 
     eventBus.update()
     viewModel.update()

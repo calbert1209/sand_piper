@@ -98,7 +98,7 @@ class EditKeyCodesViewModel:
         eventBus.setOnEncChange(self.__onEncChange)
         eventBus.setOnEncSwitchDown(self.__onEncSwitchDown)
 
-    def disconnect(self, eventBus: EventBus):
-        eventBus.setOnKeyDown(None)
-        eventBus.setOnEncChange(None)
-        eventBus.setOnEncSwitchDown(None)
+    def disconnect(self):
+        self._pixels.fill(0x000000)
+        self._pixels.show()
+        self._pixels = None
