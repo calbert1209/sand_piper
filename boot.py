@@ -3,7 +3,7 @@
 
 import board
 import digitalio
-import storage
+# import storage
 import time
 
 # On the Macropad, pressing a key grounds it. You need to set a pull-up.
