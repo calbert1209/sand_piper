@@ -73,6 +73,8 @@ class EditLabelViewModel:
         eventBus.setOnEncChange(self.__onEncChange)
 
     def disconnect(self, eventBus: EventBus):
-        eventBus.setOnKeyDown(None)
-        eventBus.setOnEncChange(None)
+        # eventBus.setOnKeyDown(None)
+        # eventBus.setOnEncChange(None)
+        self._pixels.fill(0x000000)
+        self._pixels.show()
         self._pixels = None
