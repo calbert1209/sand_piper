@@ -1,15 +1,16 @@
 from adafruit_hid.keycode import Keycode as AdaKeyCode
+from sand_piper.Models.Mgogo import PushCode, ReleaseCode
 
 
 class KeyCode:
     def __init__(self, value: int, press: bool, label: str) -> None:
-        self._value = value
+        self._code = PushCode(value) if press else ReleaseCode(value)
         self._press = press
         self._label = label
 
     @property
     def value(self):
-        return self._value
+        return self._code.value
 
     @property
     def press(self):
