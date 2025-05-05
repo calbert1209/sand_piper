@@ -1,5 +1,5 @@
 from adafruit_macropad import MacroPad
-from sand_piper.Models.KeyCodes import KeyCodes
+from sand_piper.Models.Keycodes import KeyCodes
 from sand_piper.Models.Model import KeySettings
 from sand_piper.Models.RgbValue import RGBValue
 from sand_piper.Pages.EditKeyCodes.Display import EditKeyCodesDisplay
