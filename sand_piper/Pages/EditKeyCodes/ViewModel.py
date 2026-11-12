@@ -1,5 +1,5 @@
 from adafruit_macropad import MacroPad
-from sand_piper.Models.KeyCodes import KeyCodes
+from sand_piper.Models.Keycodes import KeyCodes
 from sand_piper.Pages.EditKeyCodes.Display import EditKeyCodesDisplay
 from sand_piper.EventBus import EncoderSwitchEvent, EventBus, KeyEvent, EncoderEvent
 from sand_piper.PaginationManager import PaginationManager
@@ -81,6 +81,7 @@ class EditKeyCodesViewModel:
                 self._view.setText(i, options[i])
             else:
                 self._view.setText(i, "")
+        self._view.show()
 
     def __updatePixels(self):
         pass

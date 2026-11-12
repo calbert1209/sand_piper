@@ -48,8 +48,8 @@ class EventBus:
     def __init__(self, macroPad: MacroPad):
         self.macroPad = macroPad
         self.events: list[HidEvent] = []
-        self.lastEncoderSwitch = False
-        self.lastEncoder = 0
+        self.lastEncoderSwitch = macroPad.encoder_switch
+        self.lastEncoder = macroPad.encoder
         self._onKeyDown = self._noOp
         self._onKeyUp = self._noOp
         self._onEncSwitchDown = self._noOp
@@ -102,23 +102,19 @@ class EventBus:
         self._onKeyUp = self._noOp
         self._onEncChange = self._noOp
         self._onEncSwitchDown = self._noOp
+        self._onEncSwitchUp = self._noOp
 
-    def setOnKeyDown(self, cb: function[KeyEvent, None] | None):
-        if cb == None:
-            self._onKeyDown = self._noOp
-        self._onKeyDown = cb
+    def setOnKeyDown(self, cb):
+        self._onKeyDown = self._noOp if cb == None else cb
 
-    def setOnKeyUp(self, cb: function[KeyEvent, None] | None):
-        if cb == None:
-            self._onKeyUp = self._noOp
-        self._onKeyUp = cb
+    def setOnKeyUp(self, cb):
+        self._onKeyUp = self._noOp if cb == None else cb
 
-    def setOnEncChange(self, cb: function[EncoderEvent, None] | None):
-        if cb == None:
-            self._onEncChange = self._noOp
-        self._onEncChange = cb
+    def setOnEncChange(self, cb):
+        self._onEncChange = self._noOp if cb == None else cb
 
-    def setOnEncSwitchDown(self, cb: function[EncoderSwitchEvent, None] | None):
-        if cb == None:
-            self._onEncSwitchDown = self._noOp
-        self._onEncSwitchDown = cb
+    def setOnEncSwitchDown(self, cb):
+        self._onEncSwitchDown = self._noOp if cb == None else cb
+
+    def setOnEncSwitchUp(self, cb):
+        self._onEncSwitchUp = self._noOp if cb == None else cb

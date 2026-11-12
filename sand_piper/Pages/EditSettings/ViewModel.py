@@ -19,10 +19,11 @@ class EditSettingsViewModel:
     _activeGreen = 0x00dd00
     _noLight = 0x000000
 
-    def __init__(self, view: EditSettingsDisplay, initialValue: KeySettings, onComplete):
+    def __init__(self, view: EditSettingsDisplay, initialValue: KeySettings, onComplete, title: str = "SETTINGS"):
         self._view = view
         self._value = initialValue
         self._onComplete = onComplete
+        self._title = title
 
     def __onKeyDown(self, event: KeyEvent):
 
@@ -70,7 +71,7 @@ class EditSettingsViewModel:
         return "value string..."
 
     def __updateView(self):
-        self._view.setTitle("title")
+        self._view.setTitle(self._title)
         labelKey = "> label" if self._optionIndex == 0 else "  label"
         labelValue = self._value.getSettingString("label")
         self._view.setText(0, f"{labelKey}: {labelValue}")
@@ -80,6 +81,7 @@ class EditSettingsViewModel:
         codesKey = "> codes" if self._optionIndex == 2 else "  codes"
         codesValue = self._value.getSettingString("codes")
         self._view.setText(2, f"{codesKey}: {codesValue}",)
+        self._view.show()
 
     def __updatePixels(self):
         pass

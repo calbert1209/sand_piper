@@ -32,7 +32,7 @@ class PushCode(ParsableAsBytes):
         self.value = value
 
     def toBytes(self) -> bytes:
-        return f"{self._prefix}{self.value}".encode()
+        return self._prefix.encode() + bytes([self.value])
 
     @staticmethod
     def fromBytes(data: bytes):
@@ -55,7 +55,7 @@ class ReleaseCode(ParsableAsBytes):
         self.value = value
 
     def toBytes(self) -> bytes:
-        return f"{self._prefix}{self.value}".encode()
+        return self._prefix.encode() + bytes([self.value])
 
     @staticmethod
     def fromBytes(data: bytes):
@@ -75,6 +75,12 @@ class ShortWord(ParsableAsBytes):
 
     def __init__(self, value: bytes) -> None:
         self.value = value
+
+    def toBytes(self) -> bytes:
+        raw = bytes(self.value)[:3]
+        if len(raw) < 3:
+            raw = raw + b"\x00" * (3 - len(raw))
+        return self._prefix.encode() + raw
 
     def toInts(self) -> list[int]:
         return [int(i) for i in self.value]
@@ -96,7 +102,14 @@ class Word(ParsableAsBytes):
     length = 8
 
     def __init__(self, value: bytes) -> None:
+        if isinstance(value, str):
+            value = value.encode()
         self.value = value
+
+    def toBytes(self) -> bytes:
+        text = self.toString()[:7]
+        padded = f"{text:<7}".encode()[:7]
+        return self._prefix.encode() + padded
 
     def toInts(self) -> list[int]:
         return [int(i) for i in self.value.split()]
@@ -124,13 +137,23 @@ class LongWord(ParsableAsBytes):
     length = 16
 
     def __init__(self, value: bytes) -> None:
+        if isinstance(value, str):
+            value = value.encode()
         self.value = value
+
+    def toBytes(self) -> bytes:
+        text = self.toString()[:15]
+        padded = f"{text:<15}".encode()[:15]
+        return self._prefix.encode() + padded
 
     def toInts(self) -> list[int]:
         return [int(i) for i in self.value.split()]
 
     def toString(self) -> str:
         return self.value.decode()
+
+    def toTrimmed(self) -> str:
+        return self.toString().strip()
 
     @staticmethod
     def fromBytes(data: bytes):
@@ -159,9 +182,13 @@ class Array(ParsableBytesContainer):
     _items = None
     _length = -1
 
-    def __init__(self, length: int, items: ParsableBytesContainer) -> None:
+    def __init__(self, length: int, items: list) -> None:
         self._length = length
         self._items = items
+
+    def toBytes(self) -> bytes:
+        body = b"".join([item.toBytes() for item in self._items])
+        return self._prefix.encode() + bytes([len(self._items)]) + body
 
     @staticmethod
     def __isItemPrefix(first: int, byte: int) -> bool:
@@ -172,6 +199,8 @@ class Array(ParsableBytesContainer):
 
     @staticmethod
     def __parseContents(contents) -> list[bytes]:
+        if len(contents) == 0:
+            return []
         first = contents[0]
         output = []
         item = b""
@@ -210,19 +239,33 @@ class Array(ParsableBytesContainer):
 
     @staticmethod
     def canParseFrom(data: bytes) -> bool:
-        return data[0] == ord(Array._prefix)
+        return len(data) >= 2 and data[0] == ord(Array._prefix)
 
 
 class KeyCommand(ParsableBytesContainer):
     _prefix = Prefix.COMM
     _label: Word
     _color: ShortWord
-    _codes: list
+    _codes: Array
 
-    def __init__(self, label: str, color: tuple[int, int, int], codes: list) -> None:
-        self._label = label
-        self._color = color
-        self._codes = codes
+    def __init__(self, label, color, codes) -> None:
+        self._label = label if isinstance(label, Word) else Word(str(label))
+        if isinstance(color, ShortWord):
+            self._color = color
+        else:
+            self._color = ShortWord(bytes(color))
+        if isinstance(codes, Array):
+            self._codes = codes
+        else:
+            self._codes = Array(len(codes), codes)
+
+    def toBytes(self) -> bytes:
+        return (
+            self._prefix.encode()
+            + self._label.toBytes()
+            + self._color.toBytes()
+            + self._codes.toBytes()
+        )
 
     @property
     def label(self):
@@ -247,6 +290,9 @@ class KeyCommand(ParsableBytesContainer):
 
     @staticmethod
     def canParseFrom(data: bytes) -> bool:
+        if len(data) < 1 + Word.length + ShortWord.length + 2:
+            return False
+
         if data[0] != ord(KeyCommand._prefix):
             return False
 
@@ -265,9 +311,19 @@ class KeyCommand(ParsableBytesContainer):
 class PadPage(ParsableBytesContainer):
     _prefix = Prefix.PAGE
 
-    def __init__(self, label: LongWord, commands: Array):
-        self._label = label
-        self._commands = commands
+    def __init__(self, label, commands):
+        self._label = label if isinstance(label, LongWord) else LongWord(str(label))
+        if isinstance(commands, Array):
+            self._commands = commands
+        else:
+            self._commands = Array(len(commands), commands)
+
+    def toBytes(self) -> bytes:
+        return (
+            self._prefix.encode()
+            + self._label.toBytes()
+            + self._commands.toBytes()
+        )
 
     @property
     def label(self):
@@ -287,6 +343,9 @@ class PadPage(ParsableBytesContainer):
 
     @staticmethod
     def canParseFrom(data: bytes) -> bool:
+        if len(data) < 1 + LongWord.length + 2:
+            return False
+
         if data[0] != ord(PadPage._prefix):
             return False
 
@@ -304,11 +363,19 @@ class Decoder:
 
     def __init__(
         self,
-        fixedLengthClasses: list[ParsableAsBytes],
-        containerClasses: list[ParsableBytesContainer],
+        fixedLengthClasses=None,
+        containerClasses=None,
     ) -> None:
-        self._fixedLengthClasses = fixedLengthClasses
-        self._containerClasses = containerClasses
+        self._fixedLengthClasses = (
+            fixedLengthClasses
+            if fixedLengthClasses is not None
+            else [PushCode, ReleaseCode, ShortWord, Word, LongWord]
+        )
+        self._containerClasses = (
+            containerClasses
+            if containerClasses is not None
+            else [Array, KeyCommand, PadPage]
+        )
 
     def decode(self, data: bytes):
         for cls in self._fixedLengthClasses:
@@ -322,4 +389,13 @@ class Decoder:
         raise ValueError("Data cannot be parsed")
 
     def trim(self, nvmData: bytes) -> bytes:
-        return nvmData.split(Prefix.END.encode())[0]
+        return bytes(nvmData).split(Prefix.END.encode())[0]
+
+
+class Encoder:
+    """Class to encode settings into bytes with END terminator"""
+
+    @staticmethod
+    def encode(item) -> bytes:
+        return item.toBytes() + Prefix.END.encode()
+

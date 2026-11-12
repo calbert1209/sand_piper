@@ -11,7 +11,7 @@ class EditColorViewModel:
 
     def __init__(self, view: EditColorDisplay, initialValue: RGBValue, onComplete) -> None:
         self._view = view
-        self._value = initialValue
+        self._value = RGBValue(initialValue.r, initialValue.g, initialValue.b)
         self.__onComplete = onComplete
 
     def __onKeyDown(self, event: KeyEvent):

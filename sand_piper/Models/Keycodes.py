@@ -365,6 +365,9 @@ class KeyCodes:
         "DOWN": AdaKeyCode.DOWN_ARROW,
         "UP_ARROW": AdaKeyCode.UP_ARROW,
         "UP": AdaKeyCode.UP_ARROW,
+        "RIGHT_ARROW": AdaKeyCode.RIGHT_ARROW,
+        "RIGHT": AdaKeyCode.RIGHT_ARROW,
+
 
         "KEYPAD_NUMLOCK": AdaKeyCode.KEYPAD_NUMLOCK,
         "KEYPAD_FORWARD_SLASH": AdaKeyCode.KEYPAD_FORWARD_SLASH,
@@ -424,6 +427,7 @@ class KeyCodes:
         "RIGHT_GUI": AdaKeyCode.RIGHT_GUI,
     }
 
+    @staticmethod
     def factory(valueString: str):
         press = valueString[0] != "-"
         key = valueString[1:]
@@ -432,5 +436,16 @@ class KeyCodes:
             raise Exception(f"Key {key} not found in KeyCodes")
 
         return KeyCode(value=value, press=press, label=key)
+
+    @staticmethod
+    def fromValue(value: int, press: bool = True) -> "KeyCode":
+        for key in KeyCodes.keys:
+            if KeyCodes.entries.get(key) == value:
+                return KeyCode(value=value, press=press, label=key)
+        for key, code in KeyCodes.entries.items():
+            if code == value:
+                return KeyCode(value=value, press=press, label=key)
+        raise Exception(f"Keycode value {value} not found in KeyCodes")
+
 
 # cspell:enable

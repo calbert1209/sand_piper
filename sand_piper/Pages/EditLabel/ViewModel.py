@@ -11,9 +11,16 @@ OPTIONS = ["A", "B", "C", "D", "E", "F", "G", "H", "I",
 class EditLabelViewModel:
     _scrollIndex = 1
 
-    def __init__(self, view: EditLabelDisplay, initialValue: str, onComplete):
+    def __init__(
+        self,
+        view: EditLabelDisplay,
+        initialValue: str,
+        onComplete,
+        maxLength: int = 7,
+    ):
         self._view = view
-        self._value = list(initialValue)
+        self._value = list(initialValue[:maxLength])
+        self._maxLength = maxLength
         self._options = PaginationManager(
             items=OPTIONS, pageSize=9, repeating=True)
         self._onComplete = onComplete
@@ -30,7 +37,7 @@ class EditLabelViewModel:
         if event.key_number < 9:
             options = self._options.currentPage
             # final page of options may have less than 9 options
-            if event.key_number < len(options):
+            if event.key_number < len(options) and len(self._value) < self._maxLength:
                 self._value.append(options[event.key_number])
             return
 
@@ -56,6 +63,7 @@ class EditLabelViewModel:
                 self._view.setText(i, options[i])
             else:
                 self._view.setText(i, "")
+        self._view.show()
 
     def __updatePixels(self):
         pass
