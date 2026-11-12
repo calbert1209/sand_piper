@@ -4,4 +4,12 @@ sd/
 .Trash-1000
 .Trashes
 boot_out.txt
+.DS_Store
+.git/
+.gitignore
+.rsyncignore
+.vscode/
+Makefile
+send_to.sh
+requirements.txt
 

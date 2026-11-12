@@ -1,4 +1,5 @@
-sync_dir := ~/Projects/sand_piper
+sync_dir := /Volumes/CIRCUITPY
 
+.PHONY: sync
 sync:
-	. ./send_to.sh $(sync_dir)
+	./send_to.sh $(sync_dir)

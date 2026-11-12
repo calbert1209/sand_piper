@@ -5,7 +5,7 @@
 ##
 
 # Text file holding filenames and folders to be excluded
-excluded_files="excluded_files.txt"
+excluded_files=".rsyncignore"
 
 # Use the current directory as the source folder
 source_folder="."
@@ -19,12 +19,12 @@ fi
 # Set the destination folder variable to the first argument
 destination_folder="$1"
 
-
 # Check if destination folder exists
 if [[ ! -d "$destination_folder" ]]; then
-    echo "Error: destination folder not found."
+    echo "Error: destination folder '$destination_folder' not found."
     exit 1
 fi
 
-# Use rsync to copy files
-rsync -avz --progress "." "$destination_folder/" --exclude-from=.rsyncignore
+# Use rsync to copy files (using flags friendly to FAT filesystems on CIRCUITPY)
+rsync -rtv --delete --modify-window=1 --progress "$source_folder/" "$destination_folder/" --exclude-from="$excluded_files"
+
