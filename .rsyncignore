@@ -13,4 +13,7 @@ Makefile
 send_to.sh
 requirements.txt
 .agent/
+README.md
+AGENTS.md
+
 
