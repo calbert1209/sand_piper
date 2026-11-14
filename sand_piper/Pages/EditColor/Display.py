@@ -94,12 +94,15 @@ class EditColorDisplay:
         self.__setText(13, value)
 
     def setSecondaryLabel(self, value: str):
+        self.group[6].fill = self._white if value != "" else self._black
         self.__setText(7, value)
 
     def setTertiaryLabel(self, value: str):
+        self.group[8].fill = self._white if value != "" else self._black
         self.__setText(9, value)
 
     def setPrimaryLabel(self, value: str):
+        self.group[10].fill = self._white if value != "" else self._black
         self.__setText(11, value)
 
     def show(self):

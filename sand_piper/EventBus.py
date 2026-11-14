@@ -55,6 +55,8 @@ class EventBus:
         self._onEncSwitchDown = self._noOp
         self._onEncSwitchUp = self._noOp
         self._onEncChange = self._noOp
+        self._pressedKeys = set()
+        self._encSwitchPressed = False
 
     def _noOp(self, event: HidEvent):
         pass
@@ -84,14 +86,20 @@ class EventBus:
         for event in self.events:
             if event.type == "key":
                 if event.pressed:
+                    self._pressedKeys.add(event.key_number)
                     self._onKeyDown(event)
                 else:
-                    self._onKeyUp(event)
+                    if event.key_number in self._pressedKeys:
+                        self._pressedKeys.discard(event.key_number)
+                        self._onKeyUp(event)
             elif event.type == "enc_sw":
                 if event.pressed:
+                    self._encSwitchPressed = True
                     self._onEncSwitchDown(event)
                 else:
-                    self._onEncSwitchUp(event)
+                    if self._encSwitchPressed:
+                        self._encSwitchPressed = False
+                        self._onEncSwitchUp(event)
             elif event.type == "enc":
                 self._onEncChange(event)
 
@@ -103,6 +111,8 @@ class EventBus:
         self._onEncChange = self._noOp
         self._onEncSwitchDown = self._noOp
         self._onEncSwitchUp = self._noOp
+        self._pressedKeys.clear()
+        self._encSwitchPressed = False
 
     def setOnKeyDown(self, cb):
         self._onKeyDown = self._noOp if cb == None else cb

@@ -57,11 +57,19 @@ def onOpenPageMenu(pageIndex: int):
 
 def onAddPage():
     global activePageIndex
-    newPageNumber = len(pages) + 1
-    newPage = ControlPage.empty(f"PAGE {newPageNumber}")
-    pages.append(newPage)
-    activePageIndex = len(pages) - 1
-    routes.append("edit_page_title")
+    activePageIndex = len(pages)
+    routes.append("add_page_title")
+
+
+def onCompleteAddPageTitle(resp):
+    global activePageIndex
+    if resp is not None:
+        title = resp if len(resp) > 0 else f"PAGE {len(pages) + 1}"
+        pages.append(ControlPage.empty(title))
+        activePageIndex = len(pages) - 1
+
+    if len(routes) > 1:
+        routes.pop()
 
 
 def onSaveAndExitSettings():
@@ -190,6 +198,14 @@ def getPagePerRoute(route: str):
             view=display,
             initialValue=pages[activePageIndex].name,
             onComplete=onCompleteEditPageTitle,
+            maxLength=15,
+        )
+    if route == "add_page_title":
+        display = EditLabelDisplay(macroPad=macroPad)
+        return EditLabelViewModel(
+            view=display,
+            initialValue=f"PAGE {len(pages) + 1}",
+            onComplete=onCompleteAddPageTitle,
             maxLength=15,
         )
     if route == "edit_settings":

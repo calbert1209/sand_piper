@@ -93,7 +93,9 @@ class KeyGridViewModel:
         key_number = event.key_number
 
         if self.isAddPageScreen:
-            self._pixels[key_number] = 0xFFFFFF
+            if key_number != 4:
+                return
+            self._pixels[4] = 0xFFFFFF
             self._pixels.show()
             if self._onAddPage is not None:
                 self._onAddPage()

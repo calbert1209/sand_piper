@@ -4,7 +4,8 @@ import terminalio
 from adafruit_display_shapes.rect import Rect
 from adafruit_display_text.label import Label
 
-BANNER_HEIGHT = 13
+BANNER_HEIGHT = 11
+keyYMap = [25, 37, 49, 63]
 
 
 class KeyGridDisplay:
@@ -16,14 +17,13 @@ class KeyGridDisplay:
 
     def __createGroup(self):
         width = self.macroPad.display.width
-        height = self.macroPad.display.height
         group = Group()
         # group items 0 ~ 11: 12 key labels in a 3x4 grid
         for i in range(12):
             x = i % 3
             y = i // 3
             keyX = (width - 1) * x / 2
-            keyY = height - 1 - (3 - y) * 12
+            keyY = keyYMap[y]
             anchorPoint = (x / 2, 1.0)
             keyLabel = Label(
                 self._font,
@@ -43,7 +43,7 @@ class KeyGridDisplay:
             self._font,
             text="",
             color=self._black,
-            anchored_position=(width // 2, 0),
+            anchored_position=(width // 2, -2),
             anchor_point=(0.5, 0.0),
         )
         group.append(titleText)

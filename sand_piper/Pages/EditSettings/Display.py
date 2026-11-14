@@ -79,14 +79,10 @@ class EditSettingsDisplay:
         self.group[i].text = value
 
     def setText(self, i: int, value: str):
-        if i > 3 or i < 0:
+        if i > 2 or i < 0:
             raise Exception(f"Index {i} out of range")
 
         self.__setText(i, value)
-
-    def setPageItems(self, items: list[str]):
-        for i in range(min(len(items), 9)):
-            self.__setText(i, items[i])
 
     def setTitle(self, value: str):
         self.__setText(10, value)

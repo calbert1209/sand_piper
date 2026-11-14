@@ -1,9 +1,9 @@
 
 class RGBValue:
     def __init__(self, r: int, g: int, b: int) -> None:
-        self._r = r
-        self._g = g
-        self._b = b
+        self._r = self.__clamp__(r)
+        self._g = self.__clamp__(g)
+        self._b = self.__clamp__(b)
 
     def __clamp__(self, value: int):
         return max(0, min(value, 255))
