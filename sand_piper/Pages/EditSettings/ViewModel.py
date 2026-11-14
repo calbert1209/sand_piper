@@ -43,6 +43,10 @@ class EditSettingsViewModel:
             self._pixels[9] = self._activeRed
             self._onComplete(None)
 
+        if event.key_number == 10:
+            self._pixels[10] = self._activeRed
+            self._onComplete("delete")
+
         if event.key_number == 11:
             self._pixels[11] = self._activeGreen
             option = OPTIONS[self._optionIndex]
@@ -58,13 +62,17 @@ class EditSettingsViewModel:
         if event.key_number == 9:
             self._pixels[9] = self._dimRed
 
+        if event.key_number == 10:
+            self._pixels[10] = self._dimRed
+
         if event.key_number == 11:
             self._pixels[11] = self._dimGreen
 
         self._pixels.show()
 
     def __onEncChange(self, event: EncoderEvent):
-        pass
+        self._optionIndex = (self._optionIndex + event.delta) % len(OPTIONS)
+        self.__initPixels()
 
     @property
     def _valueString(self):
@@ -72,6 +80,7 @@ class EditSettingsViewModel:
 
     def __updateView(self):
         self._view.setTitle(self._title)
+        self._view.setTertiaryLabel("DEL")
         labelKey = "> label" if self._optionIndex == 0 else "  label"
         labelValue = self._value.getSettingString("label")
         self._view.setText(0, f"{labelKey}: {labelValue}")
@@ -92,6 +101,7 @@ class EditSettingsViewModel:
             color = self._focusOrange if self._optionIndex == i else self._dimOrange
             self._pixels[pixelIndex] = color
         self._pixels[9] = self._dimRed
+        self._pixels[10] = self._dimRed
         self._pixels[11] = self._dimGreen
         self._pixels.show()
 

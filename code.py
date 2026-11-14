@@ -66,6 +66,9 @@ def onAddPage():
 
 def onSaveAndExitSettings():
     savePagesToNvm(pages)
+    # Ensure the encoder button is completely released before resetting
+    while macroPad.encoder_switch:
+        pass
     try:
         import microcontroller
 
@@ -106,6 +109,11 @@ def onCompleteEditPageTitle(resp):
 def onCompleteSettingsMenu(key):
     """Part of router"""
     if key is None:
+        if len(routes) > 1:
+            routes.pop()
+        return
+    if key == "delete":
+        setCurrentKeySettings(KeySettings.empty())
         if len(routes) > 1:
             routes.pop()
         return

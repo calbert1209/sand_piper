@@ -40,6 +40,7 @@ class KeyGridViewModel:
         self._pixels = None
         self._encPressStartMs = None
         self._ignoreRelease = ignoreInitialEncSwitch
+        self._readyToSaveAndExit = False
 
     @property
     def isAddPageScreen(self) -> bool:
@@ -150,6 +151,7 @@ class KeyGridViewModel:
         if not self._settingsMode:
             return
         self._ignoreRelease = False
+        self._readyToSaveAndExit = False
         self._encPressStartMs = ticks_ms()
 
     def __onEncSwitchUp(self, event: EncoderSwitchEvent):
@@ -158,6 +160,12 @@ class KeyGridViewModel:
         if self._ignoreRelease:
             self._ignoreRelease = False
             self._encPressStartMs = None
+            return
+        if self._readyToSaveAndExit:
+            self._readyToSaveAndExit = False
+            self._encPressStartMs = None
+            if self._onSaveAndExit is not None:
+                self._onSaveAndExit()
             return
         if self._encPressStartMs is not None:
             elapsed = ticks_ms() - self._encPressStartMs
@@ -171,12 +179,19 @@ class KeyGridViewModel:
                         self._onOpenPageMenu(self._pageIndex)
 
     def update(self):
-        if self._settingsMode and self._encPressStartMs is not None:
+        if (
+            self._settingsMode
+            and self._encPressStartMs is not None
+            and not self._readyToSaveAndExit
+        ):
             elapsed = ticks_ms() - self._encPressStartMs
             if elapsed >= LONG_PRESS_MS:
-                self._encPressStartMs = None
-                if self._onSaveAndExit is not None:
-                    self._onSaveAndExit()
+                self._readyToSaveAndExit = True
+                self._view.setTitle("SAVING... RELEASE")
+                self._view.show()
+                if self._pixels is not None:
+                    self._pixels.fill(0x00DD00)
+                    self._pixels.show()
 
     def connect(self, macroPad: MacroPad, eventBus: EventBus):
         self._macroPad = macroPad

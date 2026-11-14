@@ -6,7 +6,7 @@ from adafruit_display_text.label import Label
 
 row3KeyXMap = [8, 65, 117]
 keyYMap = [25, 37, 49, 63]
-defaultMenuLabels = ["BACK", "", "OK"]
+defaultMenuLabels = ["BACK", "", "SAVE"]
 
 BANNER_HEIGHT = 11
 BANNER_WIDTH = 42

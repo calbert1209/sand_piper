@@ -80,7 +80,7 @@ def loadPagesFromNvm() -> list[ControlPage]:
         import microcontroller
 
         if microcontroller.nvm is not None and len(microcontroller.nvm) > 0:
-            return decodePages(bytes(microcontroller.nvm))
+            return decodePages(microcontroller.nvm[:])
     except Exception as err:
         print("Using default settings (NVM load failed):", err)
 

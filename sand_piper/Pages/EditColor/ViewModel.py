@@ -68,7 +68,7 @@ class EditColorViewModel:
         return self._value.hexValue
 
     def __updateView(self):
-        self._view.setPrimaryLabel("OK")
+        self._view.setPrimaryLabel("SAVE")
         self._view.setText(0, self._asString(self._value.r))
         self._view.setText(1, self._asString(self._value.g))
         self._view.setText(2, self._asString(self._value.b))

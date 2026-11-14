@@ -177,6 +177,37 @@ class ParsableBytesContainer:
         raise NotImplementedError()
 
 
+def measureItemLength(data: bytes, offset: int = 0) -> int:
+    if offset >= len(data):
+        raise ValueError("Unexpected end of data while measuring item length")
+
+    prefix = data[offset]
+    if prefix == ord(Prefix.PCODE) or prefix == ord(Prefix.RCODE):
+        return PushCode.length
+    if prefix == ord(Prefix.SWORD):
+        return ShortWord.length
+    if prefix == ord(Prefix.WORD):
+        return Word.length
+    if prefix == ord(Prefix.LWORD):
+        return LongWord.length
+    if prefix == ord(Prefix.COMM):
+        codesOffset = offset + 1 + Word.length + ShortWord.length
+        return (codesOffset - offset) + measureItemLength(data, codesOffset)
+    if prefix == ord(Prefix.PAGE):
+        cmdsOffset = offset + 1 + LongWord.length
+        return (cmdsOffset - offset) + measureItemLength(data, cmdsOffset)
+    if prefix == ord(Prefix.ARRAY):
+        if offset + 1 >= len(data):
+            raise ValueError("Unexpected end of data in Array header")
+        count = data[offset + 1]
+        cursor = offset + 2
+        for _ in range(count):
+            cursor += measureItemLength(data, cursor)
+        return cursor - offset
+
+    raise ValueError(f"Unknown prefix byte: {prefix} at offset {offset}")
+
+
 class Array(ParsableBytesContainer):
     _prefix = Prefix.ARRAY
     _items = None
@@ -191,30 +222,17 @@ class Array(ParsableBytesContainer):
         return self._prefix.encode() + bytes([len(self._items)]) + body
 
     @staticmethod
-    def __isItemPrefix(first: int, byte: int) -> bool:
-        if first == ord(Prefix.PCODE) or first == ord(Prefix.RCODE):
-            return byte == ord(Prefix.PCODE) or byte == ord(Prefix.RCODE)
-
-        return byte == first
-
-    @staticmethod
-    def __parseContents(contents) -> list[bytes]:
+    def __parseContents(contents: bytes, expectedLength=None) -> list[bytes]:
         if len(contents) == 0:
             return []
-        first = contents[0]
         output = []
-        item = b""
-        for byte in contents:
-            if Array.__isItemPrefix(first, byte):
-                # push any existing item to output
-                if len(item) > 0:
-                    output.append(item)
-                    item = b""
-
-            item += bytes([byte])
-
-        if len(item) > 0:
-            output.append(item)
+        cursor = 0
+        while cursor < len(contents):
+            if expectedLength is not None and len(output) >= expectedLength:
+                break
+            itemLen = measureItemLength(contents, cursor)
+            output.append(contents[cursor : cursor + itemLen])
+            cursor += itemLen
 
         return output
 
@@ -230,7 +248,7 @@ class Array(ParsableBytesContainer):
     def fromBytes(data: bytes, decode) -> "Array":
         length = data[1]
         contents = data[2:]
-        items = [decode(item) for item in Array.__parseContents(contents)]
+        items = [decode(item) for item in Array.__parseContents(contents, length)]
         if len(items) != length:
             print(f"items{len(items)} declared: {length}")
             raise ValueError("Array length does not match items' length")
@@ -389,7 +407,16 @@ class Decoder:
         raise ValueError("Data cannot be parsed")
 
     def trim(self, nvmData: bytes) -> bytes:
-        return bytes(nvmData).split(Prefix.END.encode())[0]
+        raw = bytes(nvmData[:])
+        if len(raw) == 0:
+            return b""
+        try:
+            rootLen = measureItemLength(raw, 0)
+            if rootLen <= len(raw):
+                return raw[:rootLen]
+        except Exception:
+            pass
+        return raw.split(Prefix.END.encode())[0]
 
 
 class Encoder:

@@ -57,15 +57,16 @@ The OLED header displays `*<PAGE NAME>*` to indicate Settings Mode is active, st
 #### Editing a Key
 1. Rotate the encoder to navigate to the desired page.
 2. Press any key (`0..11`) on the 3×4 grid to open its **Key Settings Menu**:
-   - **Key 0 (`label`)**: Select label option, then press **Key 11 (`OK`)** to edit the key's display name (up to 7 characters). Rotate the encoder to browse characters, press **Keys 0..8** to type, **Key 10 (`DEL`)** to backspace, **Key 9 (`BACK`)** to cancel, or **Key 11 (`OK`)** to confirm.
-   - **Key 3 (`color`)**: Select color option, then press **Key 11 (`OK`)** to adjust Red (`Key 6`), Green (`Key 7`), and Blue (`Key 8`) values (`0..255`) using the rotary encoder.
-   - **Key 6 (`codes`)**: Select keycodes option, then press **Key 11 (`OK`)** to build a keystroke chord. Press the rotary encoder button to toggle between key press (`+`) and key release (`-`), rotate the encoder to browse keys, press **Keys 0..8** to append a keycode, **Key 10 (`DEL`)** to remove the last keycode, or **Key 11 (`OK`)** to confirm.
+   - **Key 0 (`label`)**: Select label option, then press **Key 11 (`EDIT`)** to edit the key's display name (up to 7 characters). Rotate the encoder to browse characters, press **Keys 0..8** to type, **Key 10 (`DEL`)** to backspace, **Key 9 (`BACK`)** to cancel, or **Key 11 (`SAVE`)** to confirm.
+   - **Key 3 (`color`)**: Select color option, then press **Key 11 (`EDIT`)** to adjust Red (`Key 6`), Green (`Key 7`), and Blue (`Key 8`) values (`0..255`) using the rotary encoder, then press **Key 11 (`SAVE`)** to confirm.
+   - **Key 6 (`codes`)**: Select keycodes option, then press **Key 11 (`EDIT`)** to build a keystroke chord. Press the rotary encoder button to toggle between key press (`+`) and key release (`-`), rotate the encoder to browse keys, press **Keys 0..8** to append a keycode, **Key 10 (`DEL`)** to remove the last keycode, or **Key 11 (`SAVE`)** to confirm.
+   - **Key 10 (`DEL`)**: Clear all settings for this key (resets label to empty, LED color to off, and removes all keycodes) and return to the 3×4 Settings Grid.
 3. Press **Key 9 (`BACK`)** in the Key Settings Menu to return to the 3×4 Settings Grid.
 
 #### Renaming or Deleting a Page
 1. While on a page in the 3×4 Settings Grid, **short-press the rotary encoder button** to open the **Page Menu**:
-   - **`> title`**: Press **Key 0** (or rotate encoder) and press **Key 11 (`OK`)** to rename the page (up to 15 characters).
-   - **`> delete page`**: Press **Key 3** (or rotate encoder) and press **Key 11 (`OK`)** to delete the current page (available whenever more than 1 page exists).
+   - **`> title`**: Press **Key 0** (or rotate encoder) and press **Key 11 (`EDIT`)** to rename the page (up to 15 characters).
+   - **`> delete page`**: Press **Key 3** (or rotate encoder) and press **Key 11 (`EDIT`)** to delete the current page (available whenever more than 1 page exists).
    - Press **Key 9 (`BACK`)** to return to the 3×4 Settings Grid.
 
 #### Adding a New Page

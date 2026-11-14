@@ -19,6 +19,10 @@ class KeySettings:
         self._color = color
         self._codes = keyCodes
 
+    @staticmethod
+    def empty() -> "KeySettings":
+        return KeySettings(label="", color=RGBValue(0, 0, 0), keyCodes=[])
+
     @property
     def label(self) -> str:
         return self._label

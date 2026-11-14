@@ -6,7 +6,7 @@ from adafruit_display_text.label import Label
 
 row3KeyXMap = [8, 65, 117]
 keyYMap = [25, 37, 49, 63]
-defaultMenuLabels = ["BACK", "", "OK"]
+defaultMenuLabels = ["BACK", "", "EDIT"]
 
 BANNER_HEIGHT = 11
 BANNER_WIDTH = 42
@@ -36,7 +36,7 @@ class EditSettingsDisplay:
         backWidth = BANNER_WIDTH + 1
         for x in range(3):
             keyX = row3KeyXMap[x]
-            fill = self._white if x % 2 == 0 else self._black
+            fill = self._white if defaultMenuLabels[x] != "" else self._black
             back = Rect(x * backWidth, keyY-BANNER_HEIGHT,
                         BANNER_WIDTH, BANNER_HEIGHT, fill=fill)
             anchorPoint = (x / 2, 1.0)
@@ -92,12 +92,15 @@ class EditSettingsDisplay:
         self.__setText(10, value)
 
     def setSecondaryLabel(self, value: str):
+        self.group[3].fill = self._white if value != "" else self._black
         self.__setText(4, value)
 
     def setTertiaryLabel(self, value: str):
+        self.group[5].fill = self._white if value != "" else self._black
         self.__setText(6, value)
 
     def setPrimaryLabel(self, value: str):
+        self.group[7].fill = self._white if value != "" else self._black
         self.__setText(8, value)
 
     def show(self):
